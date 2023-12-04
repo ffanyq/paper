@@ -7,23 +7,23 @@ extern crate rustc_driver;
 extern crate rustc_interface;
 extern crate rustc_middle;
 extern crate rustc_session;
-mod callback;
+extern crate rustc_hash;
+extern crate rustc_span;
 mod analyzer;
+mod callback;
 fn main() {
     let args: Vec<String> = vec![
-        "rustc".to_string(), // 通常第一个参数是可执行文件名
+        "rustc".to_string(),  // 通常第一个参数是可执行文件名
         "toy.rs".to_string(), // 指定要编译的 Rust 源文件
     ];
 
     let result = rustc_driver::catch_fatal_errors(|| {
-        let mut callbacks = callback::rlock_callback;
-        let compiler =
-        rustc_driver::RunCompiler::new(&args.as_slice(), &mut callbacks);
+        let mut callbacks = callback::RLockCallback;
+        let compiler = rustc_driver::RunCompiler::new(&args.as_slice(), &mut callbacks);
         compiler.run()
+    })
+    .and_then(|result| result);
 
-    }).and_then(|result| result);
-
-    
     let exit_code = match result {
         Ok(_) => rustc_driver::EXIT_SUCCESS,
         Err(_) => rustc_driver::EXIT_FAILURE,
