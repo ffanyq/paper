@@ -1,12 +1,9 @@
 extern crate rustc_span;
-use rustc_middle::mir::visit::{PlaceContext, Visitor};
-use rustc_middle::mir::{
-    Body, HasLocalDecls, Local, LocalDecl, LocalKind, Location, Operand, Rvalue, Statement,
-    StatementKind, Terminator, TerminatorKind,
-};
-use rustc_middle::ty::{self, EarlyBinder, Instance, ParamEnv, TyCtxt, TyKind};
+use rustc_middle::mir::visit::Visitor;
+use rustc_middle::mir::{Body, HasLocalDecls};
+use rustc_middle::ty::TyCtxt;
 use rustc_span::def_id::LocalDefId;
-use std::collections::HashSet;
+
 pub struct TestVistor<'tcx> {
     tcx: TyCtxt<'tcx>,
     id: LocalDefId,
@@ -49,7 +46,11 @@ impl<'a, 'tcx> Visitor<'tcx> for MyVisitor<'a, 'tcx> {
     //     self.super_statement(statement, _location);
     // }
 
-    fn visit_basic_block_data(&mut self,block:rustc_middle::mir::BasicBlock,data: &rustc_middle::mir::BasicBlockData<'tcx>,) {
+    fn visit_basic_block_data(
+        &mut self,
+        block: rustc_middle::mir::BasicBlock,
+        data: &rustc_middle::mir::BasicBlockData<'tcx>,
+    ) {
         println!("index: {:?}, stms: {:?}", block, data);
 
         self.super_basic_block_data(block, data);
